@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/register").permitAll()  // Allow registration and login without auth
-                        .requestMatchers("/markSpam","/search","/searchByPhoneNumber","/userDetails").authenticated()// Require authentication for the spam marking and search API
+                        .requestMatchers("/markSpam","/search","/searchByPhoneNumber","/userDetails","/delete","/updateUser/**","/all").authenticated()// Require authentication for the spam marking and search API
                         .requestMatchers("/users/**").authenticated()
                 )
                 .sessionManagement(session -> session

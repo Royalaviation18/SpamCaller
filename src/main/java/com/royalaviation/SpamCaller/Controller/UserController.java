@@ -29,10 +29,25 @@ public class UserController {
         return userService.loginUser(userModel);
     }
 
+    @PutMapping("/delete")
+    public String softDeleteUser(@RequestParam String phoneNumber) {
+        return userService.softDeleteUser(phoneNumber);
+    }
+
+    @GetMapping("/all")
+    public List<UserDetailResponse> getAllUserDetails() {
+        return userService.getAllUserDetails();
+    }
+
 
     @PutMapping("/markSpam")
     public String markPhoneNumberAsSpam(@RequestParam String phoneNumber) {
         return userService.markPhoneNumberAsSpam(phoneNumber);
+    }
+
+    @PutMapping("/updateUser/{id}")
+    public String updateUser(@PathVariable Long id, @RequestBody UserModel userModel) {
+        return userService.updateUser(id, userModel);
     }
 
     @GetMapping("/search")

@@ -28,6 +28,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String createUser(UserModel userModel) {
+        if (userRepository.findByPhoneNumber(userModel.getPhoneNumber()).isPresent()) {
+            return "Phone number already in use!";
+        }
+        if (userModel.getEmail() != null && userRepository.findByEmail(userModel.getEmail()).isPresent()) {
+            return "Email is already in use!";
+        }
         System.out.println("UserModel data: " + userModel);
 
         // Create UserEntity
@@ -136,6 +142,64 @@ public class UserServiceImpl implements UserService {
                 isEmailVisible ? userEntity.getEmail() : null
         );
     }
+
+    @Override
+    public String softDeleteUser(String phoneNumber) {
+        Optional<UserEntity> userOptional = userRepository.findByPhoneNumber(phoneNumber);
+
+        if (userOptional.isPresent()) {
+            UserEntity userEntity = userOptional.get();
+            userEntity.setActive(false);
+            userRepository.save(userEntity);
+            return "User soft deleted successfully.";
+        } else {
+            return "User not found.";
+        }
+    }
+
+    @Override
+    public String updateUser(Long id, UserModel userModel) {
+        Optional<UserEntity> userOptional = userRepository.findById(id);
+
+        if (userOptional.isEmpty()) {
+            return "User not found.";
+        }
+
+        UserEntity userEntity = userOptional.get();
+        // Update fields from UserModel
+        if (userModel.getName() != null) {
+            userEntity.setName(userModel.getName());
+        }
+        if (userModel.getEmail() != null) {
+            userEntity.setEmail(userModel.getEmail());
+        }
+        if (userModel.getPhoneNumber() != null) {
+            userEntity.setPhoneNumber(userModel.getPhoneNumber());
+        }
+        if (userModel.getPassword() != null) {
+            userEntity.setPassword(passwordEncoder.encode(userModel.getPassword()));
+        }
+
+        // Save updated user entity
+        userRepository.save(userEntity);
+        return "User updated successfully.";
+    }
+
+    @Override
+    public List<UserDetailResponse> getAllUserDetails() {
+        // Fetch all users from the repository
+        List<UserEntity> users = userRepository.findAll();
+
+
+        return users.stream()
+                .map(user -> new UserDetailResponse(
+                        user.getName(),
+                        user.getPhoneNumber(),
+                        user.isSpam() ? "Spam Number" : "Not Spam",
+                        user.getEmail()))
+                .collect(Collectors.toList());
+    }
+
 
 
 }
