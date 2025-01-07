@@ -14,11 +14,15 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("createUser")
+    @PostMapping("/register")
     public String createNewUser(@RequestBody UserModel userModel) {
-        // Add debug statements to check what is received
         System.out.println("UserModel received: " + userModel);
         return userService.createUser(userModel);
+    }
+
+    @PostMapping("/login")
+    public String userLogin(@RequestBody UserModel userModel){
+        return userService.loginUser(userModel);
     }
 
 }
