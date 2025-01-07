@@ -3,6 +3,8 @@ package com.royalaviation.SpamCaller.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "users")
@@ -10,9 +12,13 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String phoneNumber;
+
     private String email;
+
     private String password;
 
     @Column(nullable = false)
@@ -20,6 +26,9 @@ public class UserEntity {
 
     @Column(nullable = false)
     private boolean spam = false;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContactEntity> contacts;
 
     @Override
     public String toString() {
@@ -31,6 +40,7 @@ public class UserEntity {
                 ", password='" + password + '\'' +
                 ", active=" + active +
                 ", spam=" + spam +
+                ", contacts=" + contacts +
                 '}';
     }
 }
