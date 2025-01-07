@@ -7,4 +7,6 @@ public interface UserService {
     String createUser(UserModel userModel);
 
     String loginUser(UserModel userModel);
+
+    String markPhoneNumberAsSpam(String phoneNumber);
 }

@@ -5,9 +5,7 @@ import com.royalaviation.SpamCaller.Model.UserModel;
 import com.royalaviation.SpamCaller.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -23,6 +21,12 @@ public class UserController {
     @PostMapping("/login")
     public String userLogin(@RequestBody UserModel userModel){
         return userService.loginUser(userModel);
+    }
+
+
+    @PutMapping("/markSpam")
+    public String markPhoneNumberAsSpam(@RequestParam String phoneNumber) {
+        return userService.markPhoneNumberAsSpam(phoneNumber);
     }
 
 }

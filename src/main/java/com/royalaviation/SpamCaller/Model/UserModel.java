@@ -15,6 +15,10 @@ public class UserModel {
     @NotNull
     private String password;
 
+
+    private boolean active = true;
+    private boolean spam = false;
+
     @Override
     public String toString() {
         return "UserModel{" +
@@ -23,7 +27,8 @@ public class UserModel {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", active=" + active +
+                ", spam=" + spam +
                 '}';
     }
-
 }

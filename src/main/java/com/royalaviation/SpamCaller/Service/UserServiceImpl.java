@@ -6,6 +6,7 @@ import com.royalaviation.SpamCaller.Model.UserModel;
 import com.royalaviation.SpamCaller.Repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,29 @@ public class UserServiceImpl implements UserService {
         }
         return jwtUtil.generateToken(userEntity.getEmail());
 
+    }
+
+    public String markPhoneNumberAsSpam(String phoneNumber) {
+        // Get the currently authenticated user
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<UserEntity> userOptional = userRepository.findByEmail(username);
+
+        if (userOptional.isPresent()) {
+            UserEntity userEntity = userOptional.get();
+            // Find the user by the phone number and mark as spam
+            Optional<UserEntity> phoneUserOptional = userRepository.findByPhoneNumber(phoneNumber);
+
+            if (phoneUserOptional.isPresent()) {
+                UserEntity phoneUser = phoneUserOptional.get();
+                phoneUser.setSpam(true);
+                userRepository.save(phoneUser);
+                return "Phone number marked as spam successfully.";
+            } else {
+                return "Phone number not found.";
+            }
+        } else {
+            return "User not authenticated.";
+        }
     }
 
 }
