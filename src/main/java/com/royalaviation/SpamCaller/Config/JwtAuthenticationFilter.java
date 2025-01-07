@@ -22,7 +22,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestPath = request.getServletPath();
-        if (requestPath.equals("/users/new") || requestPath.equals("/users/login")) {
+
+        // Allowing public paths like login and register
+        if (requestPath.equals("/login") || requestPath.equals("/register")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -32,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
+            jwt = authorizationHeader.substring(7);  // Extract JWT token
             username = jwtUtil.extractEmail(jwt);
         }
 
@@ -42,7 +44,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(username, null, null);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Kindly login first");
+                return;
             }
+        } else if (username == null) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Kindly login first");
+            return;
         }
 
         filterChain.doFilter(request, response);

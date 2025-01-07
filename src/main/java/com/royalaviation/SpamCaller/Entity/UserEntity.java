@@ -1,6 +1,5 @@
 package com.royalaviation.SpamCaller.Entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,6 +15,12 @@ public class UserEntity {
     private String email;
     private String password;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @Column(nullable = false)
+    private boolean spam = false;
+
     @Override
     public String toString() {
         return "UserEntity{" +
@@ -24,6 +29,8 @@ public class UserEntity {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", active=" + active +
+                ", spam=" + spam +
                 '}';
     }
 }
