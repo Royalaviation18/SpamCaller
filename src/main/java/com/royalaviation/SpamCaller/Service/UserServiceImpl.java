@@ -1,7 +1,9 @@
 package com.royalaviation.SpamCaller.Service;
 
 import com.royalaviation.SpamCaller.Config.JwtUtil;
+import com.royalaviation.SpamCaller.Entity.ContactEntity;
 import com.royalaviation.SpamCaller.Entity.UserEntity;
+import com.royalaviation.SpamCaller.Model.UserDetailResponse;
 import com.royalaviation.SpamCaller.Model.UserModel;
 import com.royalaviation.SpamCaller.Repository.UserRepository;
 import org.springframework.beans.BeanUtils;
@@ -10,7 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,13 +29,30 @@ public class UserServiceImpl implements UserService {
     @Override
     public String createUser(UserModel userModel) {
         System.out.println("UserModel data: " + userModel);
+
+        // Create UserEntity
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(userModel, userEntity);
         userEntity.setPassword(passwordEncoder.encode(userModel.getPassword()));
-        System.out.println("UserEntity after copy and password encryption: " + userEntity);
-        userRepository.save(userEntity);
+
+        // Add contacts if provided
+        if (userModel.getContacts() != null && !userModel.getContacts().isEmpty()) {
+            List<ContactEntity> contactEntities = userModel.getContacts().stream()
+                    .map(contactModel -> {
+                        ContactEntity contactEntity = new ContactEntity();
+                        contactEntity.setName(contactModel.getName());
+                        contactEntity.setPhoneNumber(contactModel.getPhoneNumber());
+                        contactEntity.setUser(userEntity); // Link contact to user
+                        return contactEntity;
+                    })
+                    .collect(Collectors.toList());
+            userEntity.setContacts(contactEntities);
+        }
+
+        userRepository.save(userEntity); // Save user along with contacts
         return "User created successfully";
     }
+
 
     @Override
     public String loginUser(UserModel userModel) {
@@ -69,5 +90,52 @@ public class UserServiceImpl implements UserService {
             return "User not authenticated.";
         }
     }
+
+    public List<UserEntity> searchUsersByName(String name) {
+        List<UserEntity> usersStartingWith = userRepository.findByNameStartingWithIgnoreCase(name);
+        List<UserEntity> usersContaining = userRepository.findByNameContainingIgnoreCase(name);
+
+        usersStartingWith.addAll(usersContaining.stream()
+                .filter(user -> !usersStartingWith.contains(user))
+                .collect(Collectors.toList()));
+
+        return usersStartingWith;
+    }
+
+    public List<UserEntity> searchUsersByPhoneNumber(String phoneNumber) {
+        Optional<UserEntity> userOptional = userRepository.findByPhoneNumber(phoneNumber);
+
+        if (userOptional.isPresent()) {
+            // If the phone number matches a registered user, return that user
+            return List.of(userOptional.get());
+        } else {
+            // Otherwise, find all users with the same phone number (from different users' contact lists)
+            return userRepository.findByPhoneNumberContaining(phoneNumber);
+        }
+    }
+
+    public UserDetailResponse getUserDetails(String phoneNumber, String loggedInEmail) {
+        Optional<UserEntity> userOptional = userRepository.findByPhoneNumber(phoneNumber);
+        if (userOptional.isEmpty()) {
+            throw new IllegalArgumentException("User not found for the given phone number.");
+        }
+
+        UserEntity userEntity = userOptional.get();
+        boolean isEmailVisible = false;
+
+        // Check if the logged-in user is in the person's contact list
+        if (userEntity.getContacts().stream()
+                .anyMatch(contact -> contact.getPhoneNumber().equals(loggedInEmail))) {
+            isEmailVisible = true;
+        }
+
+        return new UserDetailResponse(
+                userEntity.getName(),
+                userEntity.getPhoneNumber(),
+                userEntity.isSpam() ? "Spam Number" : "Not Spam",
+                isEmailVisible ? userEntity.getEmail() : null
+        );
+    }
+
 
 }
