@@ -16,4 +16,5 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
     List<UserEntity> findByNameContainingIgnoreCase(String name);
 
     List<UserEntity> findByPhoneNumberContaining(String phoneNumber);
+
 }

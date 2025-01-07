@@ -21,4 +21,8 @@ public interface UserService {
 
 
     UserDetailResponse getUserDetails(String phoneNumber, String loggedInEmail);
+
+    String softDeleteUser(String phoneNumber);
+    String updateUser(Long id, UserModel userModel);
+    List<UserDetailResponse> getAllUserDetails();
 }
