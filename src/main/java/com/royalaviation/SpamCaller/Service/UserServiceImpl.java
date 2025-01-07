@@ -52,6 +52,9 @@
 
             if (userModel.getContacts() != null && !userModel.getContacts().isEmpty()) {
                 List<ContactEntity> contactEntities = userMapper.userModelContactsToContactEntity(userModel.getContacts());
+
+                contactEntities.forEach(contact -> contact.setUser(userEntity));
+
                 userEntity.setContacts(contactEntities);
             }
 
