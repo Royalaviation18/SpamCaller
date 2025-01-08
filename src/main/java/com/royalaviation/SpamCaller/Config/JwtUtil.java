@@ -26,7 +26,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Extract email from the token
     public String extractEmail(String token) {
         try {
             return Jwts.parser()
