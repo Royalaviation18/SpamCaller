@@ -1,6 +1,5 @@
 package com.royalaviation.SpamCaller.Service;
 
-
 import com.royalaviation.SpamCaller.Entity.UserEntity;
 import com.royalaviation.SpamCaller.Model.UserDetailResponse;
 import com.royalaviation.SpamCaller.Model.UserModel;
@@ -19,10 +18,11 @@ public interface UserService {
 
     List<UserEntity> searchUsersByPhoneNumber(String phoneNumber);
 
-
     UserDetailResponse getUserDetails(String phoneNumber, String loggedInEmail);
 
     String softDeleteUser(String phoneNumber);
+
     String updateUser(Long id, UserModel userModel);
+
     List<UserDetailResponse> getAllUserDetails();
 }

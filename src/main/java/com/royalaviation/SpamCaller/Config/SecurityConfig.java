@@ -30,22 +30,24 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/error").permitAll() // Allow public access to login,
-                                                                                      // register, and error pages
-                        .requestMatchers("/markSpam", "/search", "/searchByPhoneNumber", "/userDetails", "/delete",
-                                "/updateUser/**", "/all")
+                        .requestMatchers("/login", "/register", "/error",
+                                "/swagger-ui/**", "/v3/api-docs/**")
+                        .permitAll() // Swagger endpoints allowed
+                        .requestMatchers("/markSpam", "/search", "/searchByPhoneNumber", "/userDetails",
+                                "/delete", "/updateUser/**", "/all")
                         .authenticated() // Secure endpoints
                         .requestMatchers("/users/**").authenticated() // Secure user-related endpoints
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless session management
-                )
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
         return http.build();
     }
+
 }
