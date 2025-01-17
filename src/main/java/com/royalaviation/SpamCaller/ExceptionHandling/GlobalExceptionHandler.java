@@ -28,16 +28,4 @@ public class GlobalExceptionHandler {
         // Returning the custom error response with HTTP status 500
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    // Additional specific exception handlers can be added if necessary
-    // For example, handling a specific exception like UnauthorizedAccessException:
-    // @ExceptionHandler(UnauthorizedAccessException.class)
-    // public ResponseEntity<Object> handleUnauthorizedAccess(UnauthorizedAccessException ex, WebRequest request) {
-    //     Map<String, Object> body = new HashMap<>();
-    //     body.put("status", HttpStatus.FORBIDDEN.value());
-    //     body.put("error", "Unauthorized Access");
-    //     body.put("message", ex.getMessage());
-    //     body.put("timestamp", new Date());
-    //     return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
-    // }
 }
