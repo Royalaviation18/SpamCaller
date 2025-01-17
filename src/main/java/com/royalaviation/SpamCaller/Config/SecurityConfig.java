@@ -19,11 +19,11 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationFilter authFilter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();  // Correctly defines the PasswordEncoder bean
+        return new BCryptPasswordEncoder(); // Correctly defines the PasswordEncoder bean
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -35,14 +35,17 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/error").permitAll()  // Allow public access to login, register, and error pages
-                        .requestMatchers("/markSpam", "/search", "/searchByPhoneNumber", "/userDetails", "/delete", "/updateUser/**", "/all").authenticated()  // Secure endpoints
-                        .requestMatchers("/users/**").authenticated()  // Secure user-related endpoints
+                        .requestMatchers("/login", "/register", "/error").permitAll() // Allow public access to login,
+                                                                                      // register, and error pages
+                        .requestMatchers("/markSpam", "/search", "/searchByPhoneNumber", "/userDetails", "/delete",
+                                "/updateUser/**", "/all")
+                        .authenticated() // Secure endpoints
+                        .requestMatchers("/users/**").authenticated() // Secure user-related endpoints
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Stateless session management
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless session management
                 )
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);  // Add JWT filter
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
         return http.build();
     }
 }

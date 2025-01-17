@@ -1,6 +1,5 @@
 package com.royalaviation.SpamCaller.Controller;
 
-
 import com.royalaviation.SpamCaller.Entity.UserEntity;
 import com.royalaviation.SpamCaller.Model.UserDetailResponse;
 import com.royalaviation.SpamCaller.Model.UserModel;
@@ -25,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String userLogin(@RequestBody UserModel userModel){
+    public String userLogin(@RequestBody UserModel userModel) {
         return userService.loginUser(userModel);
     }
 
@@ -38,7 +37,6 @@ public class UserController {
     public List<UserDetailResponse> getAllUserDetails() {
         return userService.getAllUserDetails();
     }
-
 
     @PutMapping("/markSpam")
     public String markPhoneNumberAsSpam(@RequestParam String phoneNumber) {
@@ -54,7 +52,8 @@ public class UserController {
     public List<UserSearchResult> searchUsersByName(@RequestParam String name) {
         List<UserEntity> users = userService.searchUsersByName(name);
         return users.stream()
-                .map(user -> new UserSearchResult(user.getName(), user.getPhoneNumber(), user.isSpam() ? "Spam Number" : "Not Spam"))
+                .map(user -> new UserSearchResult(user.getName(), user.getPhoneNumber(),
+                        user.isSpam() ? "Spam Number" : "Not Spam"))
                 .collect(Collectors.toList());
     }
 
@@ -62,7 +61,8 @@ public class UserController {
     public List<UserSearchResult> searchUsersByPhoneNumber(@RequestParam String phoneNumber) {
         List<UserEntity> users = userService.searchUsersByPhoneNumber(phoneNumber);
         return users.stream()
-                .map(user -> new UserSearchResult(user.getName(), user.getPhoneNumber(), user.isSpam() ? "Spam Number" : "Not Spam"))
+                .map(user -> new UserSearchResult(user.getName(), user.getPhoneNumber(),
+                        user.isSpam() ? "Spam Number" : "Not Spam"))
                 .collect(Collectors.toList());
     }
 
@@ -71,8 +71,6 @@ public class UserController {
         String loggedInEmail = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userService.getUserDetails(phoneNumber, loggedInEmail);
     }
-
-
 
     public static class UserSearchResult {
         private String name;
