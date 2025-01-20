@@ -20,7 +20,7 @@ public interface UserMapper {
 
     // Map UserModel contacts to ContactEntity
     default List<ContactEntity> userModelContactsToContactEntity(List<ContactModel> contacts) {
-        return contacts.stream()
+        return contacts.stream(
                 .map(contactModel -> {
                     ContactEntity contactEntity = new ContactEntity();
                     contactEntity.setName(contactModel.getName());
