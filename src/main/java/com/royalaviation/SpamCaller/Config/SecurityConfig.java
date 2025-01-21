@@ -17,36 +17,39 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationFilter authFilter;
+        @Autowired
+        private JwtAuthenticationFilter authFilter;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Correctly defines the PasswordEncoder bean
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder(); // Correctly defines the PasswordEncoder bean
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+                return config.getAuthenticationManager();
+        }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/error",
-                                "/swagger-ui/**", "/v3/api-docs/**")
-                        .permitAll() // Swagger endpoints allowed
-                        .requestMatchers("/markSpam", "/search", "/searchByPhoneNumber", "/userDetails",
-                                "/delete", "/updateUser/**", "/all")
-                        .authenticated() // Secure endpoints
-                        .requestMatchers("/users/**").authenticated() // Secure user-related endpoints
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
-        return http.build();
-    }
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/login", "/register", "/error",
+                                                                "/swagger-ui/**", "/v3/api-docs/**")
+                                                .permitAll() // Swagger endpoints allowed
+                                                .requestMatchers("/markSpam", "/search", "/searchByPhoneNumber",
+                                                                "/userDetails",
+                                                                "/delete", "/updateUser/**", "/all")
+                                                .authenticated() // Secure endpoints
+                                                .requestMatchers("/users/**").authenticated() // Secure user-related
+                                                                                              // endpoints
+                                )
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT
+                                                                                                          // filter
+                return http.build();
+        }
 
 }
